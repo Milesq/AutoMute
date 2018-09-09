@@ -1,0 +1,20 @@
+{
+	"name": "Automate mute",
+	"version": "1.2",
+	"description": "Rozszerzenie automatycznie wycisza wszystkich użytkowników konferencjii poza moderatorami.",
+	"permissions": ["activeTab"],
+	"browser_action": {
+		"default_popup": "popup.html"
+	},
+	"web_accessible_resources": [
+		"popup.js"
+	],
+	 "content_scripts": [
+   {
+     "matches": ["https://ipfon24.ipfon.pl/?action=konferencja_static&id=a00e2caa5a6ec313216b59c937dccf65"],
+		 "js": ["contentScript.js"],
+		 "css": ["contentStylesheet.css"]
+   }
+ ],
+	"manifest_version": 2
+}
