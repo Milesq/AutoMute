@@ -1,4 +1,5 @@
 const TIME = 2000; //optymalny czas
+let inter;
 
 function NodeListToList(nodeList) {
 	let returns = [];
@@ -24,7 +25,10 @@ function getAdmins() {
 
 function newUsers() {
 	let phones = [],
-		phoneBook = [["Miłosz Wiśniewski", "720755493"], ["Alina Nadolska", "514519533"]];
+		phoneBook = [
+			["Miłosz Wiśniewski", "720755493"],
+			["Alina Nadolska", "514519533"]
+		];
 
 	document.querySelectorAll('#returnDiv tr').forEach((el, i) => {
 		if (i != 0) phones.push(el);
@@ -70,6 +74,22 @@ function interval() {
 	newUsers();
 }
 
-console.log(setInterval(interval, TIME));
 document.getElementById('returnDiv').outerHTML = `<div id="results"><table border="0" id="users"></table>${document.getElementById('returnDiv').outerHTML}</div>`;
 document.querySelector('table').setAttribute('width', "");
+
+if (localStorage.getItem('active') != "false") {
+	inter = setInterval(interval, TIME);
+	console.log("włączone");
+} else console.log("wyłączone");
+
+chrome.runtime.onMessage.addListener((request) => {
+	console.log(request);
+	if (request == "start") {
+		inter = setInterval(interval, TIME);
+		localStorage.setItem('active', true);
+	} else if (request == "stop") {
+		clearInterval(inter);
+		localStorage.setItem('active', false);
+	}
+});
+document.querySelector('head').innerHTML += "<title>Konferencja Ipfon</title>";
