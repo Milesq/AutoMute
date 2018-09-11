@@ -1,3 +1,4 @@
+//controller
 var actived = true;
 
 document.getElementById('settings').addEventListener('click', () => {
@@ -22,10 +23,18 @@ function send(msg) {
   chrome.tabs.query({
     title: 'Konferencja Ipfon'
   }, tabs => {
-    chrome.tabs.sendMessage(tabs[0].id, msg);
+    if (typeof (tabs[0]) !== "undefined") {
+      chrome.tabs.sendMessage(tabs[0].id, msg);
+    }
   });
 }
 
 if (localStorage.getItem('active') == "false") {
   document.getElementById('on-btn').click();
 }
+
+chrome.tabs.onCreated.addListener(tab => {
+  if(tab.url == chrome.runtime.getManifest().content_scripts[0].matches[0]) {
+    chrome.sendMessage(tab.id, chrome.storage.local.get('data'));
+  }
+});

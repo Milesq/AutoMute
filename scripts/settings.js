@@ -9,7 +9,6 @@ function afterEvent () {
 
 document.getElementById('saveData').addEventListener('click', afterEvent);
 chrome.storage.local.get(['data'], response => {
-    console.log(response);
     document.getElementById('phonesInput').value = response.data.phones;
     document.getElementById('dateInput').value = response.data.date
 });
