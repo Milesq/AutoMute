@@ -8,19 +8,23 @@
 </head>
 
 <body>
-    <section class="silent-times">
-        <h2 class="silent-times__header">
-            Dane w formacie:<br>
-            dzień:godzinaPoczątkowa.minut-godzinaKońcowa.minut <br>
-            dzień:godzinaPoczątkowa.minut-godzinaKońcowa.minut</h2>
-        <textarea class="silent-times__times" cols="30" rows="10"></textarea>
+    <section>
+        <article class="silent-times">
+            <h2 class="silent-times__header">
+                Dane w formacie:<br>
+                dzień:godzinaPoczątkowa.minut-godzinaKońcowa.minut <br>
+                dzień:godzinaPoczątkowa.minut-godzinaKońcowa.minut</h2>
+            <textarea id="dateInput" class="silent-times__times" cols="30" rows="10"></textarea>
+        </article>
+        <article class="phone-book">
+            <h2 class="phone-book__header">
+                Dane w formacie:<br>
+                [["Imię i nazwisko", numer], ["Drugie imie", numer]]</h2>
+            <textarea id="phonesInput" class="phone-book__times" cols="30" rows="10"></textarea>
+        </article>
+        <button id="saveData">Zapisz</button>
     </section>
-    <section class="phone-book">
-        <h2 class="phone-book__header">
-            Dane w formacie:<br>
-            [["Imię i nazwisko", numer], ["Drugie imie", numer]]</h2>
-        <textarea class="phone-book__times" cols="30" rows="10"></textarea>
-    </section>
+    <script src="scripts/settings.js"></script>
 </body>
 
 </html>
