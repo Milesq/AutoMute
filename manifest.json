@@ -1,6 +1,6 @@
 {
 	"name": "Automate mute",
-	"version": "1.3",
+	"version": "2.0",
 	"description": "Rozszerzenie automatycznie wycisza wszystkich użytkowników konferencjii poza moderatorami.",
 	"permissions": ["activeTab", "tabs", "storage"],
 	"browser_action": {
