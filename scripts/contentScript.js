@@ -1,5 +1,30 @@
-const TIME = 2000; //optymalny czas
+﻿const TIME = 2000; //optymalny czas
+
 function main(phonesResponse) {
+	let whenActive = '["' + phonesResponse.data.date + '"]',
+		canBeActive = false;
+	whenActive = JSON.parse(whenActive.replace(/\n/gm, '", "'));
+	whenActive.forEach(el => {
+		let day = '',
+		days = ["pn", "wt", "śr", "czw", "pt", "s", "nd"];
+		for (let i in el) {
+			if(el[i] == ':') break;
+			else day += el[i];
+		}
+
+		if(days.indexOf(day) != -1) {
+			if (day == days[new Date().getDay()-1]) {
+				canBeActive = true;
+				//start work there
+			}
+		}
+	});	
+
+	if (!canBeActive) {
+		console.log('It shouldn\'t do anything, not now');
+		return;
+	}
+	console.log('It shouldn\'t do everthing what must');
 	let inter;
 
 	function NodeListToList(nodeList) {
@@ -11,7 +36,7 @@ function main(phonesResponse) {
 	}
 
 	function getAdmins() {
-		let ch = document.querySelectorAll('input[type=checkbox]'),
+		let ch = document.querySelectorAll('input[type=checkbox]:not(.invisible)'),
 			j = 0,
 			ret = [];
 		ch = NodeListToList(ch);
@@ -27,8 +52,15 @@ function main(phonesResponse) {
 	function newUsers() {
 		let phones = [],
 			phoneBook = [["Miłosz Wiśniewski", "720755490"]];
-		if (typeof(phonesResponse.data) !== "undefined" && /\S/.test(phonesResponse.data.phones)) phoneBook = JSON.parse(phonesResponse.data.phones);
-		console.log(phonesResponse.data);
+		if (typeof(phonesResponse.data) !== "undefined" && /\S/.test(phonesResponse.data.phones)) {
+			let newPhones = phonesResponse.data.phones;
+			newPhones.match(/[0-9]{9}/gm).forEach(el => {
+				newPhones  = newPhones.replace(el, '", "' + el);
+			});
+			newPhones = newPhones.replace(/\n/, "\"], [\"");
+			newPhones = "[[\"" + newPhones + "\"]]";
+			phoneBook = JSON.parse(newPhones);
+		}
 
 		document.querySelectorAll('#returnDiv tr').forEach((el, i) => {
 			if (i != 0) phones.push(el);
@@ -41,7 +73,7 @@ function main(phonesResponse) {
 			let phone = doc.querySelector('td:nth-child(2)').innerHTML;
 			phoneBook.forEach(contact => {
 				if (contact[1] == phone) { //give name
-					content += `<tr><td> ${contact[0]} </td> <td><input style="visibility: hidden;" type="checkbox"></td> </tr>`;
+					content += `<tr><td> ${contact[0]} </td> <td><input class="invisible" style="visibility: hidden;" type="checkbox"></td> </tr>`;
 				}
 			});
 		});
@@ -67,7 +99,6 @@ function main(phonesResponse) {
 			if (i) {
 				if (i.innerHTML == 'Wycisz') {
 					i.click();
-					console.log('Wyciszono');
 				}
 			}
 		});
@@ -79,8 +110,7 @@ function main(phonesResponse) {
 
 	if (localStorage.getItem('active') != "false") {
 		inter = setInterval(interval, TIME);
-		console.log("włączone");
-	} else console.log("wyłączone");
+	}
 
 	chrome.runtime.onMessage.addListener((request) => {
 		console.log(request);
