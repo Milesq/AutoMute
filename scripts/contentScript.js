@@ -1,30 +1,66 @@
 ﻿const TIME = 2000; //optymalny czas
 
 function main(phonesResponse) {
+	function parseDate(str) {
+		let returnData = {
+			day: '',
+			start: {
+				hour: '',
+				minuts: ''
+			},
+			end: {
+				hour: '',
+				minuts: ''
+			}
+		};
+
+		let i=0;
+		for (i in str) {
+			if(str[i] == ':') break;
+			else returnData.day += str[i];
+		}
+		++i;
+		for (i;str[i]!=='.';++i) {
+			returnData.start.hour += str[i];
+		}
+		++i;
+		for (i;str[i]!=='-';++i) {
+			returnData.start.minuts += str[i];
+		}
+		++i;
+		for (i;str[i]!=='.';++i) {
+			returnData.end.hour += str[i];
+		}
+		++i;
+		for (i;i<str.length;++i) {
+			returnData.end.minuts += str[i];
+		}
+		return returnData;
+	}
+	
 	let whenActive = '["' + phonesResponse.data.date + '"]',
 		canBeActive = false;
 	whenActive = JSON.parse(whenActive.replace(/\n/gm, '", "'));
-	whenActive.forEach(el => {
-		let day = '',
-		days = ["pn", "wt", "śr", "czw", "pt", "s", "nd"];
-		for (let i in el) {
-			if(el[i] == ':') break;
-			else day += el[i];
+	whenActive.forEach((el, i) => {
+		if (!(/^\S{2}\:[0-9]{1,2}\.[0-9]{1,2}\-[0-9]{2}\.[0-9]{2}$/.test(el))) {
+			alert('Invalid value for the "Active Times" field in extensions options, Error in ' + i+1 + ' line');
+			return; // there should be a "continue" instruction but, this place isn't in the real loop
 		}
+		let days = ["nd", "pn", "wt", "śr", "czw", "pt", "s"],
+			now = new Date();
+		el = parseDate(el);
 
-		if(days.indexOf(day) != -1) {
-			if (day == days[new Date().getDay()-1]) {
-				canBeActive = true;
-				//start work there
-			}
+		if(days.indexOf(el.day) != -1) {
+			if (el.day == days[now.getDay()] &&
+				now.getHours() >= el.start.hour*1 &&
+				now.getMinutes() >= el.start.minuts*1) canBeActive = true;
 		}
-	});	
-
+	});
 	if (!canBeActive) {
 		console.log('It shouldn\'t do anything, not now');
 		return;
 	}
-	console.log('It shouldn\'t do everthing what must');
+	console.log('It should do everthing what must');
 	let inter;
 
 	function NodeListToList(nodeList) {
