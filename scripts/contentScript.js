@@ -1,66 +1,28 @@
 ﻿const TIME = 2000; //optymalny czas
 
 function main(phonesResponse) {
+	const whatWasEarlier = (p, q) => ((p[0] < q[0]) || (p[0]==q[0] && p[1] < q[1]))? true : false;
+	
 	function parseDate(str) {
 		let returnData = {
 			day: '',
-			start: {
-				hour: '',
-				minuts: ''
-			},
-			end: {
-				hour: '',
-				minuts: ''
-			}
+			start: {},
+			end: {}
 		};
 
-		let i=0;
-		for (i in str) {
-			if(str[i] == ':') break;
+		for (let i in str) {
+			if (str[i] == ':') break;
 			else returnData.day += str[i];
 		}
-		++i;
-		for (i;str[i]!=='.';++i) {
-			returnData.start.hour += str[i];
-		}
-		++i;
-		for (i;str[i]!=='-';++i) {
-			returnData.start.minuts += str[i];
-		}
-		++i;
-		for (i;str[i]!=='.';++i) {
-			returnData.end.hour += str[i];
-		}
-		++i;
-		for (i;i<str.length;++i) {
-			returnData.end.minuts += str[i];
-		}
+
+		returnData.start.hour = /:([0-9]{2})/.exec(str)[1] * 1;
+		returnData.start.minuts = /\.([0-9]{2})/g.exec(str)[1] * 1;
+
+		returnData.end.hour = /\-([0-9]{2})/.exec(str)[1] * 1;
+		returnData.end.minuts = /\-.*\.([0-9]{2})/.exec(str)[1] * 1;
 		return returnData;
 	}
-	
-	let whenActive = '["' + phonesResponse.data.date + '"]',
-		canBeActive = false;
-	whenActive = JSON.parse(whenActive.replace(/\n/gm, '", "'));
-	whenActive.forEach((el, i) => {
-		if (!(/^\S{2}\:[0-9]{1,2}\.[0-9]{1,2}\-[0-9]{2}\.[0-9]{2}$/.test(el))) {
-			alert('Invalid value for the "Active Times" field in extensions options, Error in ' + i+1 + ' line');
-			return; // there should be a "continue" instruction but, this place isn't in the real loop
-		}
-		let days = ["nd", "pn", "wt", "śr", "czw", "pt", "s"],
-			now = new Date();
-		el = parseDate(el);
 
-		if(days.indexOf(el.day) != -1) {
-			if (el.day == days[now.getDay()] &&
-				now.getHours() >= el.start.hour*1 &&
-				now.getMinutes() >= el.start.minuts*1) canBeActive = true;
-		}
-	});
-	if (!canBeActive) {
-		console.log('It shouldn\'t do anything, not now');
-		return;
-	}
-	console.log('It should do everthing what must');
 	let inter;
 
 	function NodeListToList(nodeList) {
@@ -87,11 +49,13 @@ function main(phonesResponse) {
 
 	function newUsers() {
 		let phones = [],
-			phoneBook = [["Miłosz Wiśniewski", "720755490"]];
-		if (typeof(phonesResponse.data) !== "undefined" && /\S/.test(phonesResponse.data.phones)) {
+			phoneBook = [
+				["Miłosz Wiśniewski", "720755490"]
+			];
+		if (typeof (phonesResponse.data) !== "undefined" && /\S/.test(phonesResponse.data.phones)) {
 			let newPhones = phonesResponse.data.phones;
 			newPhones.match(/[0-9]{9}/gm).forEach(el => {
-				newPhones  = newPhones.replace(el, '", "' + el);
+				newPhones = newPhones.replace(el, '", "' + el);
 			});
 			newPhones = newPhones.replace(/\n/, "\"], [\"");
 			newPhones = "[[\"" + newPhones + "\"]]";
@@ -120,10 +84,39 @@ function main(phonesResponse) {
 	}
 
 	function interval() {
+		if(typeof(phonesResponse.data) == "undefined") phonesResponse.data = {date: ''}
+		if (!(phonesResponse.data.date.toLowerCase()==="all" || !/\S/.test(phonesResponse.data.date))) {
+			let whenActive = '["' + phonesResponse.data.date + '"]',
+				canBeActive = false;
+			whenActive = JSON.parse(whenActive.replace(/\n/gm, '", "'));
+			whenActive.forEach((el, i) => {
+				if (!/^\S{2}\:([0-9]{1,2}\.[0-9]{2}.?){2}$/.test(el)) {
+					alert('Invalid value for the "Active Times" field in extensions options, Error in ' + i + 1 + ' line');
+					clearInterval(inter);
+					return; // there should be a "continue" instruction but, this place isn't in the real loop
+				}
+				let days = ["nd", "pn", "wt", "śr", "czw", "pt", "sb"],
+					now = new Date();
+				el = parseDate(el);
+
+				if (days.indexOf(el.day) != -1) {
+					if (el.day == days[now.getDay()] &&
+					whatWasEarlier([el.start.hour, el.start.minuts], [now.getHours(), now.getMinutes()]) &&
+				 	!whatWasEarlier([el.end.hour, el.end.minuts], [now.getHours(), now.getMinutes()])
+					) canBeActive = true;
+				}
+			});
+
+			if (!canBeActive) {
+				console.log('Nie ma działać');
+				return;
+			}
+		}
+		console.log("Ma działać");
+
 		document.querySelector('a[onclick^=ajaxGetList]').click();
 
-		let toMute = document.querySelectorAll('a[onclick*=mute]');
-		toMute = NodeListToList(toMute);
+		let toMute = NodeListToList(document.querySelectorAll('a[onclick*=mute]'));
 
 		getAdmins().forEach(i => {
 			toMute[i] = null;
@@ -132,11 +125,7 @@ function main(phonesResponse) {
 		toMute.pop();
 
 		toMute.forEach(i => {
-			if (i) {
-				if (i.innerHTML == 'Wycisz') {
-					i.click();
-				}
-			}
+				if (i && i.innerHTML == 'Wycisz') i.click();
 		});
 		newUsers();
 	}
@@ -156,11 +145,9 @@ function main(phonesResponse) {
 		} else if (request == "stop") {
 			clearInterval(inter);
 			localStorage.setItem('active', false);
-		} else {
-			console.log(reuest);
 		}
 	});
-
-	document.querySelector('head').innerHTML += "<title>Konferencja Ipfon</title>";
 }
+
+document.querySelector('head').innerHTML += "<title>Konferencja Ipfon</title>";
 chrome.storage.local.get(['data'], main);
