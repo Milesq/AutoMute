@@ -54,10 +54,13 @@ function main(phonesResponse) {
 			];
 		if (typeof (phonesResponse.data) !== "undefined" && /\S/.test(phonesResponse.data.phones)) {
 			let newPhones = phonesResponse.data.phones;
-			newPhones.match(/[0-9]{9}/gm).forEach(el => {
+			newPhones.match(/\s[0-9]{9}/gm).forEach(el => {
+				el = el.replace(/\s/, '');
 				newPhones = newPhones.replace(el, '", "' + el);
 			});
-			newPhones = newPhones.replace(/\n/, "\"], [\"");
+			while(/\n/.test(newPhones)) {
+				newPhones = newPhones.replace(/\n/, "\"], [\"");
+			}
 			newPhones = "[[\"" + newPhones + "\"]]";
 			phoneBook = JSON.parse(newPhones);
 		}
@@ -68,7 +71,7 @@ function main(phonesResponse) {
 		phones.pop();
 		phones.pop();
 		let content = '<br> <tr><th> Imie i nazwisko </th></tr>';
-		phones.forEach((el, i) => {
+		phones.forEach((el) => {
 			let doc = new DOMParser().parseFromString("<table>" + el.innerHTML + "</table>", "text/html");
 			let phone = doc.querySelector('td:nth-child(2)').innerHTML;
 			phoneBook.forEach(contact => {
@@ -112,7 +115,7 @@ function main(phonesResponse) {
 				return;
 			}
 		}
-		console.log("Ma działać");
+		// console.log("Ma działać");
 
 		document.querySelector('a[onclick^=ajaxGetList]').click();
 
@@ -125,7 +128,7 @@ function main(phonesResponse) {
 		toMute.pop();
 
 		toMute.forEach(i => {
-				if (i && i.innerHTML == 'Wycisz') i.click();
+			if (i && i.innerHTML == 'Wycisz') i.click();
 		});
 		newUsers();
 	}
