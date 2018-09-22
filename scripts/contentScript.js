@@ -1,29 +1,22 @@
 ﻿const TIME = 2000; //optymalny czas
 
 function main(phonesResponse) {
-	const whatWasEarlier = (p, q) => ((p[0] < q[0]) || (p[0]==q[0] && p[1] < q[1]))? true : false;
-	
-	function parseDate(str) {
-		let returnData = {
-			day: '',
-			start: {},
-			end: {}
-		};
-
-		for (let i in str) {
-			if (str[i] == ':') break;
-			else returnData.day += str[i];
-		}
-
-		returnData.start.hour = /:([0-9]{2})/.exec(str)[1] * 1;
-		returnData.start.minuts = /\.([0-9]{2})/g.exec(str)[1] * 1;
-
-		returnData.end.hour = /\-([0-9]{2})/.exec(str)[1] * 1;
-		returnData.end.minuts = /\-.*\.([0-9]{2})/.exec(str)[1] * 1;
-		return returnData;
-	}
-
 	let inter;
+	const whatWasEarlier = (p, q) => ((p[0] < q[0]) || (p[0] == q[0] && p[1] < q[1])) ? true : false;
+
+	function parseDate(str) {
+		return {
+			day: /^(\S+)\:/.exec(str)[1],
+			start: {
+				hour: /:([0-9]{2})/.exec(str)[1] * 1,
+				minuts: /\.([0-9]{2})/g.exec(str)[1] * 1
+			},
+			end: {
+				hour: /\-([0-9]{2})/.exec(str)[1] * 1,
+				minuts: /\-.*\.([0-9]{2})/.exec(str)[1] * 1
+			}
+		};
+	}
 
 	function NodeListToList(nodeList) {
 		let returns = [];
@@ -50,7 +43,7 @@ function main(phonesResponse) {
 	function newUsers() {
 		let phones = [],
 			phoneBook = [
-				["Miłosz Wiśniewski", "720755490"]
+				["Administracja", "525524910"]
 			];
 		if (typeof (phonesResponse.data) !== "undefined" && /\S/.test(phonesResponse.data.phones)) {
 			let newPhones = phonesResponse.data.phones;
@@ -58,7 +51,7 @@ function main(phonesResponse) {
 				el = el.replace(/\s/, '');
 				newPhones = newPhones.replace(el, '", "' + el);
 			});
-			while(/\n/.test(newPhones)) {
+			while (/\n/.test(newPhones)) {
 				newPhones = newPhones.replace(/\n/, "\"], [\"");
 			}
 			newPhones = "[[\"" + newPhones + "\"]]";
@@ -87,8 +80,10 @@ function main(phonesResponse) {
 	}
 
 	function interval() {
-		if(typeof(phonesResponse.data) == "undefined") phonesResponse.data = {date: ''}
-		if (!(phonesResponse.data.date.toLowerCase()==="all" || !/\S/.test(phonesResponse.data.date))) {
+		if (typeof (phonesResponse.data) == "undefined") phonesResponse.data = {
+			date: ''
+		}
+		if (!(phonesResponse.data.date.toLowerCase() === "all" || !/\S/.test(phonesResponse.data.date))) {
 			let whenActive = '["' + phonesResponse.data.date + '"]',
 				canBeActive = false;
 			whenActive = JSON.parse(whenActive.replace(/\n/gm, '", "'));
@@ -104,8 +99,8 @@ function main(phonesResponse) {
 
 				if (days.indexOf(el.day) != -1) {
 					if (el.day == days[now.getDay()] &&
-					whatWasEarlier([el.start.hour, el.start.minuts], [now.getHours(), now.getMinutes()]) &&
-				 	!whatWasEarlier([el.end.hour, el.end.minuts], [now.getHours(), now.getMinutes()])
+						whatWasEarlier([el.start.hour, el.start.minuts], [now.getHours(), now.getMinutes()]) &&
+						!whatWasEarlier([el.end.hour, el.end.minuts], [now.getHours(), now.getMinutes()])
 					) canBeActive = true;
 				}
 			});

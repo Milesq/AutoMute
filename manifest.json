@@ -10,12 +10,11 @@
 		"scripts/popup.js",
 		"scripts/settings.js"
 	],
-	 "content_scripts": [
-   {
-     "matches": ["https://ipfon24.ipfon.pl/?action=konferencja_static&id=a00e2caa5a6ec313216b59c937dccf65"],
-		 "js": ["scripts/contentScript.js"],
-		 "css": ["styles/contentStylesheet.css"]
-   }
- ],
+	"content_scripts": [{
+		"matches": ["https://ipfon24.ipfon.pl/?action=konferencja_static&id=a00e2caa5a6ec313216b59c937dccf65"],
+		"js": ["scripts/contentScript.js"],
+		"css": ["styles/contentStylesheet.css"]
+	}],
+	"options_page": "settings.html",
 	"manifest_version": 2
 }
