@@ -12,4 +12,18 @@ body {
 
 #users {
   min-width: 5vw;
+}body {
+  display: flex;
+}
+
+#results {
+  position: relative;
+}
+
+#results > * {
+  display: inline-block;
+}
+
+#users {
+  min-width: 5vw;
 }

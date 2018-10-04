@@ -28,4 +28,34 @@
     <script src="scripts/settings.js"></script>
 </body>
 
+</html><!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ustawienia AutoMute</title>
+</head>
+
+<body>
+    <section>
+        <article class="silent-times">
+            <h2 class="silent-times__header">
+                Dane w formacie:<br>
+                dzień:godzinaPoczątkowa.minut-godzinaKońcowa.minut <br>
+                dzień:godzinaPoczątkowa.minut-godzinaKońcowa.minut <br>
+                (Jako dzień można wpisać: pn, wt, śr, czw, pt, sb, nd) lub 'ALL' żeby rozszerzenie było czynne zawsze. (Można też pozostawić puste)</h2>
+            <textarea id="dateInput" class="silent-times__times" cols="30" rows="10"></textarea>
+        </article>
+        <article class="phone-book">
+            <h2 class="phone-book__header">
+                Dane w formacie:<br>
+                Imię i nazwisko numer <br>  Drugie imie numer</h2>
+            <textarea id="phonesInput" class="phone-book__times" cols="30" rows="10"></textarea>
+        </article>
+        <button id="saveData">Zapisz</button>
+    </section>
+    <script src="scripts/settings.js"></script>
+</body>
+
 </html>
