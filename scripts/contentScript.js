@@ -4,6 +4,16 @@ function main(phonesResponse) {
 	let inter;
 	const whatWasEarlier = (p, q) => ((p[0] < q[0]) || (p[0] == q[0] && p[1] < q[1])) ? true : false;
 
+	function isInBook(phone, phoneBook) {
+		let ret = false;
+		phoneBook.forEach((el, i) => {
+			if (el[1] == phone) {
+				ret = i;
+			}
+		});
+		return ret;
+	}
+
 	function parseDate(str) {
 		return {
 			day: /^(\S+)\:/.exec(str)[1],
@@ -63,15 +73,22 @@ function main(phonesResponse) {
 		});
 		phones.pop();
 		phones.pop();
+
 		let content = '<br> <tr><th> Imie i nazwisko </th></tr>';
 		phones.forEach((el) => {
-			let doc = new DOMParser().parseFromString("<table>" + el.innerHTML + "</table>", "text/html");
-			let phone = doc.querySelector('td:nth-child(2)').innerHTML;
-			phoneBook.forEach(contact => {
+			let doc = new DOMParser().parseFromString("<table>" + el.innerHTML + "</table>", "text/html"),
+				phone = doc.querySelector('td:nth-child(2)').innerHTML;
+			if (isInBook(phone, phoneBook) !== false) {
+				let currentPhone = phoneBook[isInBook(phone, phoneBook)][0];
+				content += `<tr><td> ${currentPhone} </td> <td><input class="invisible" style="visibility: hidden;" type="checkbox"></td> </tr>`;
+			} else {
+				content += '<tr><td>Nieznany</td> <td><input class="invisible" style="visibility: hidden;" type="checkbox"></td> </tr>';
+			}
+			/*phoneBook.forEach(contact => {
 				if (contact[1] == phone) { //give name
 					content += `<tr><td> ${contact[0]} </td> <td><input class="invisible" style="visibility: hidden;" type="checkbox"></td> </tr>`;
 				}
-			});
+			});*/
 		});
 
 		if (document.getElementById('users') != null) {

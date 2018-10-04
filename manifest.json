@@ -1,7 +1,7 @@
 {
 	"name": "Automate mute",
-	"version": "2.1.0",
-	"description": "Rozszerzenie automatycznie wycisza wszystkich użytkowników konferencjii poza moderatorami.",
+	"version": "3.0.0",
+	"description": "Rozszerzenie automatycznie wycisza wszystkich użytkowników konferencjii poza moderatorami. Zapewnia również funkcje książki telefonicznej",
 	"permissions": ["activeTab", "tabs", "storage"],
 	"browser_action": {
 		"default_popup": "popup.html"
