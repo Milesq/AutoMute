@@ -1,4 +1,4 @@
-﻿const TIME = 2000; //optymalny czas
+﻿const TIME = 2000; //optymalny czas w milisecundach (1sek = 1000 milisek)
 
 function main(phonesResponse) {
 	let inter;
@@ -82,13 +82,8 @@ function main(phonesResponse) {
 				let currentPhone = phoneBook[isInBook(phone, phoneBook)][0];
 				content += `<tr><td> ${currentPhone} </td> <td><input class="invisible" style="visibility: hidden;" type="checkbox"></td> </tr>`;
 			} else {
-				content += '<tr><td>Nieznany</td> <td><input class="invisible" style="visibility: hidden;" type="checkbox"></td> </tr>';
+				content += `<tr><td><a target="blank" href="${chrome.runtime.getURL("settings.html")}">Nieznany</a></td> <td><input class="invisible" style="visibility: hidden;" type="checkbox"></td> </tr>`;
 			}
-			/*phoneBook.forEach(contact => {
-				if (contact[1] == phone) { //give name
-					content += `<tr><td> ${contact[0]} </td> <td><input class="invisible" style="visibility: hidden;" type="checkbox"></td> </tr>`;
-				}
-			});*/
 		});
 
 		if (document.getElementById('users') != null) {
@@ -97,6 +92,7 @@ function main(phonesResponse) {
 	}
 
 	function interval() {
+		console.log('extension');
 		if (typeof (phonesResponse.data) == "undefined") phonesResponse.data = {
 			date: ''
 		}
